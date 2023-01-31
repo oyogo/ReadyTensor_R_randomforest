@@ -1,0 +1,48 @@
+---
+title: "Logistic Regression with Random Forest"
+format: html
+editor: visual
+---
+
+# load libraries 
+
+```{r}
+library(randomForest)
+library(data.table)
+library(dplyr)
+```
+
+# Import data
+```{r}
+telco <- fread("telco_churn_train.csv")
+```
+
+# some bit of transformation
+```{r}
+
+# we'll use the mode function to replace missing values with mode
+mvalues <- na.omit(telco)
+
+telco <- telco[, Churn := fifelse(Churn=="Yes",1,0)] 
+
+```
+
+# train
+```{r}
+rf <- randomForest(Churn ~ ., data = mvalues, proximity=TRUE, importance=TRUE)
+```
+
+Prediction
+```{r}
+telco_test <- fread("telco_churn_test.csv")
+telco_test <- na.omit(telco_test)
+telco_test <- telco_test[,Churn := fifelse(Churn=="Yes",1,0)]
+
+predictions <- cbind(telco_test,predict(rf,telco_test))
+```
+
+Get prediction results
+```{r}
+telco_predictions <- predictions[,c("customerID","Churn","V2")]
+```
+
