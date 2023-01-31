@@ -33,10 +33,10 @@ testing <- function()
   testdata_preds <- thepredictions[,c(eval(resvar),"predictions")]
   #print(head(testdata_preds))
   
-  testpredictions <- tidyr::pivot_wider(testdata_preds,names_from=eval(resvar),values_from="predictions")
-
-  testpredictions_n <- setDT(testpredictions)[is.na(`1`),`1` := 1-`0`][is.na(`0`),`0` := 1-`1`]
-  write.csv(testpredictions_n,"./../ml_vol/testpredictions.csv")
+  # testpredictions <- tidyr::pivot_wider(testdata_preds,names_from=eval(resvar),values_from="predictions")
+  # 
+  # testpredictions_n <- setDT(testpredictions)[is.na(`1`),`1` := 1-`0`][is.na(`0`),`0` := 1-`1`]
+  write.csv(testdata_preds,"./../ml_vol/testpredictions.csv")
 
 }
 

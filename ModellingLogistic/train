@@ -25,9 +25,9 @@ varr <- preprocessing(fname_train=fname_train,fname_schema=fname_schema,genericd
 #function to train the model  and save it back into the mounted volume
 lets_train <- function(dat,rvar){
 
-  rf <- randomForest(Churn ~ ., data = dat, proximity=TRUE, importance=TRUE)
+  rf <- randomForest(eval(as.symbol(paste0(varr))) ~ ., data = dat, proximity=TRUE, importance=TRUE)
   # save the model into the artifacts folder in the attached volume.
-  saveRDS(rf, "./../ml_vol/model.rds")
+  saveRDS(rf, "./../ml_vol/rfmodel.rds")
 
 }
 
