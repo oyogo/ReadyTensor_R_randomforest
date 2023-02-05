@@ -4,7 +4,7 @@ format: html
 editor: visual
 ---
 
-# load libraries 
+# load libraries
 
 ```{r}
 library(randomForest)
@@ -13,28 +13,36 @@ library(dplyr)
 ```
 
 # Import data
+
 ```{r}
-telco <- fread("telco_churn_train.csv")
+telco <- fread("ml_vol/telco_churn_train.csv")
 ```
 
 # some bit of transformation
+
 ```{r}
-
+mvalues <- mvalues[, Churn := fifelse(Churn=="Yes",1,0)] 
 # we'll use the mode function to replace missing values with mode
-mvalues <- na.omit(telco)
+mvalues <- na.omit(mvalues)
 
-telco <- telco[, Churn := fifelse(Churn=="Yes",1,0)] 
 
+str(telco)
 ```
 
 # train
+
 ```{r}
+lb <- LabelEncoder$new()
+
+mvalues[,c("Churn")] <- lb$fit_transform(mvalues[,c("Churn")])
+
 rf <- randomForest(Churn ~ ., data = mvalues, proximity=TRUE, importance=TRUE)
 ```
 
 Prediction
+
 ```{r}
-telco_test <- fread("telco_churn_test.csv")
+telco_test <- fread("ml_vol/telco_churn_test.csv")
 telco_test <- na.omit(telco_test)
 telco_test <- telco_test[,Churn := fifelse(Churn=="Yes",1,0)]
 
@@ -42,7 +50,7 @@ predictions <- cbind(telco_test,predict(rf,telco_test))
 ```
 
 Get prediction results
+
 ```{r}
 telco_predictions <- predictions[,c("customerID","Churn","V2")]
 ```
-

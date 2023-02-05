@@ -6,13 +6,10 @@
 library(data.table) # Opted for this, 1. Because its really fast 2. dplyr conflicted with plumber
 library(rjson) # for handling json data
 library(FeatureHashing)
-library(stringr)
-library(dplyr)
+library(superml)
+library(glue)
 
 preprocessing <- function(fname_train,fname_schema,genericdata,dataschema){ 
-  
-
-  #names(genericdata) <- gsub("%","x",names(genericdata))
 
   # get the response variable and store it as a string to a variable
   varr <- dataschema$inputDatasets$binaryClassificationBaseMainInput$targetField
@@ -64,22 +61,17 @@ for (cat_coll in cat_vars) {
 
 }
 
-genericdata <- mutate(genericdata, Churn=
-                   case_when(Churn == "Yes" ~ 1,
-                             Churn == "No" ~ 0,TRUE ~ as.numeric(Churn)))
+var <- as.symbol(varr)
 
-#genericdata <- setDT(genericdata)[, eval(varr) := fifelse(eval(varr)=="Yes",1,0)]#[,eval(varr) := as.numeric(eval(varr))]
-#genericdata <- genericdata[,eval(varr):=as.numeric(eval(varr))]
-genericdata <- subset(genericdata,select = -c(eval(as.name(paste0(idfieldname)))))
-#genericdata <- na.omit(genericdata)
+# label encode the response variable
+lbl <- LabelEncoder$new()
 
-# # encode the categorical variables and create a matrix for the xgboost training
-# modelmat <- hashed.model.matrix(c(catcols,v),
-#                              genericdata, hash.size = 2 ^ 10,
-#                              create.mapping = TRUE)
-# 
-return(list(genericdata,varr,idfieldname))
-#return(head(genericdata))
+genericdata[,c(glue({var}))] <- lbl$fit_transform(genericdata[,c(glue({var}))])
+
+data_withid <- genericdata # will need this for the prediction output(we need the id column for aligning the predictions with the respective id)
+data_noid <- subset(genericdata,select = -c(eval(as.name(paste0(idfieldname)))))
+
+return(list(data_noid,varr,data_withid))
   
 }
 
