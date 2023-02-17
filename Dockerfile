@@ -15,8 +15,10 @@ RUN R -e "install.packages('rjson', dependencies=T)"
 RUN R -e "install.packages('plumber', dependencies=T)"
 RUN R -e "install.packages('jsonlite', dependencies=T)"
 RUN R -e "install.packages('tidyr', dependencies=T)"
-RUN R -e "install.packages('xgboost', dependencies=T)"
+RUN R -e "install.packages('randomForest', dependencies=T)"
 RUN R -e "install.packages('FeatureHashing', dependencies=T)"
+RUN R -e "install.packages('superml', dependencies=T)"
+RUN R -e "install.packages('glue', dependencies=T)"
 
 
 COPY ./ModellingLogistic /opt/ModellingLogistic
