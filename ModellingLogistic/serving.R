@@ -11,8 +11,8 @@ function(req) {
   
     df <- req$postBody
     parsed_df <- rjson::fromJSON(df)
-    dfr <-  as.data.frame(do.call(cbind, parsed_df))
-    
+    #dfr <-  as.data.frame(do.call(cbind, parsed_df))
+    dfr <- data.table::rbindlist(parsed_df$instances)
     rf_logistic <- readr::read_rds("./../ml_vol/model/artifacts/rfmodel.rds")
     resvar <- readr::read_rds("./../ml_vol/model/artifacts/response_variable.rds")
     id <- readr::read_rds("./../ml_vol/model/artifacts/id.rds")
